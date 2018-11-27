@@ -10,10 +10,13 @@ createClass = function(className, superClassList) {
         superClassList : superClassList,
 
         call : function (funcName, parameters) {
-            if (this.hasOwnProperty('func')) {
-                return this.func(parameters);
+
+            if (this.hasOwnProperty(funcName)) {
+                return this[funcName](parameters);
+
             } else if (this.class !== undefined) {
                 return this.class.call(funcName, parameters);
+
             } else if (this.superClassList !== undefined && this.superClassList !== null) {
 
                 let list = this.superClassList;
@@ -29,14 +32,10 @@ createClass = function(className, superClassList) {
         },
 
         new : function () {
-            let instance = {
+            return {
                 class: this,
                 call: this.call
             };
-            if (this.hasOwnProperty('func')) {
-                instance['func'] = this.func;
-            }
-            return instance;
         },
 
         checkCircularInheritance : function (args) {
@@ -53,14 +52,16 @@ createClass = function(className, superClassList) {
                 let list = sClass.superClassList;
 
                 for (let i = 0; i < list.length; i++) {
+
                     if (thisClass === list[i]) {
                         return true;
-                    } else if (
-                        list[i].hasOwnProperty('superClassList')
+                    }
+                    else if (list[i].hasOwnProperty('superClassList')
                         && list[i].superClassList !== undefined
-                        && list[i].superClassList !== null
-                    ) {
+                        && list[i].superClassList !== null)
+                    {
                         circular = list[i].checkCircularInheritance([thisClass, list[i]]);
+
                         if (circular === true)
                             return true;
                     }
@@ -74,7 +75,7 @@ createClass = function(className, superClassList) {
             if (!this.checkCircularInheritance([this, arg])) {
                 if (this.superClassList !== undefined && this.superClassList !== null) {
                     this.superClassList.push(arg)
-                } else {
+                 } else {
                     this.superClassList = [arg];
                 }
             } else {
@@ -96,11 +97,13 @@ try {
     class0.func = function(arg) { return "func0: " + arg; };
     let class1 = createClass("Class1", [class0]);
     let class2 = createClass("Class2", []);
-    class2.func = function(arg) { return "func2: " + arg; };
+    class2.test = function(arg) { return "func2: " + arg; };
     let class3 = createClass("Class3", [class1, class2]);
     let obj3 = class3.new();
-    let result = obj3.call("func", ["hello"]);
-    console.log(result);
+    let result1 = obj3.call("test", ["test"]);
+    console.log(result1);
+    let result2 = obj3.call("func", ["func"]);
+    console.log(result2);
 
     /* Test 2 */
     console.log("\nTest 2:");
