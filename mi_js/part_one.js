@@ -14,77 +14,121 @@ var myObject = {
       console.error("Bad params");
     }
     if(prototypeList != null){
-      //filter duplicate args
-      prototypeList = prototypeList.filter((item, pos, self) => self.indexOf(item) == pos);
-      obj.prototypeList = prototypeList;
+      //filter duplicate args and set obj prototypse
+      obj.prototypeList = prototypeList.filter((item, pos, self) => self.indexOf(item) == pos);
     }
     return obj;
   },
 
   "call": function (funcName, parameters) {
-    	var visited = [];
-    	return this.depthSearch(funcName, parameters, visited);
+    	return this.depthSearch(funcName, parameters);
     },
 
-    "depthSearch": function (funcName, parameters, visited) {
-  		visited.push(this);
+    /**
+    * If the function does not exist within the obj itself,
+    * a depth first seach for the function is used.
+    * Example: obj.prototypeList[obj0, obj1, obj2]
+    * If the obj0 (the first obj in the array) does not contain the function,
+    * a recursive call to obj0.prototypeList will be made instead of searching
+    * in obj1.
+    */
+    "depthSearch": function (funcName, parameters) {
   		if(this.hasOwnProperty(funcName)) {
   			return this[funcName](parameters);
-  		}
-
-      var result;
-      this.prototypeList.forEach( obj => {
-        if(visited.indexOf(obj) === -1) {
-          //obj not found in visited[]
-          var call = obj.depthSearch(funcName, parameters, visited)
-					if(call != undefined && result === undefined) {
-						result = call;
-						return;
-					}
-        }else{
-          console.log("Circular inheritance");
-        }
-      });
-      return result;
-    },
-
-    addPrototype:function(obj){
-      console.log(this);
-      obj.prototypeList.forEach((proto) => {
-        if(Object.is(proto, this) || Object.is(obj, this)){
-          console.log("Circular");
-          return;
-        }else{
-          if(!this.prototypeList){
-            var prototypeList = [];
-            this.prototypeList.push(obj);
-          }else{
-            this.prototypeList.push(obj);
+  		}else{
+        var notFound = true;
+        var call;
+        for(let i=0; notFound && (this.prototypeList) && i<this.prototypeList.length; i++){
+          call = this.prototypeList[i].depthSearch(funcName, parameters);
+          if(call != undefined){
+            notFound = false;
           }
         }
-      });
+        return call;
+      }
+    },
+
+    "addPrototype":function(obj){
+      let originalObject = this;
+      let mayNotBeAdded = this.seachForSameObj(obj, originalObject);
+      if(mayNotBeAdded){
+        console.error("Circular");
+      }else{
+        if(this.prototypeList){
+          this.prototypeList.push(obj);
+        }else{
+          this.prototypeList = [obj];
+        }
+        console.log("Added " + obj);
+      }
+
+    },
+
+    "seachForSameObj":function(obj, originalObject){
+      var found = false;
+      if(Object.is(obj, originalObject)){
+        found = true;
+      }else{
+        // There are more protoypes in the obj
+        for(let i=0; !found &&(obj.prototypeList)&&i < obj.prototypeList.length; i++){
+          let proto = obj.prototypeList[i];
+          found = proto.seachForSameObj(proto, originalObject);
+        }
+      }
+      console.log(found);
+      // no circular inheritance found, add the proto
+      return found;
     },
 
 }
 
 
 try{
-  /*
-  * Test 1
-  */
+  //test Circular Inheritance
   var obj0 = myObject.create(null);
   obj0.func = function(arg) { return "func0: " + arg; };
   var obj1 = myObject.create([obj0]);
   var obj2 = myObject.create([]);
   obj2.func = function(arg) { return "func2: " + arg; };
-  var obj3 = myObject.create([obj1, obj2]);
-  var result = obj3.call("func", ["hello"]) ;
-  console.log("should print 'func0: hello' ->", result);
+  var obj3 = myObject.create([obj2, obj1]);
+  var obj4 = myObject.create([obj2]);
+  var obj5 = myObject.create([obj1]);
+
+  var obj7 = myObject.create([obj4, obj5, obj0]);
+  var obj8 = myObject.create([obj7]);
+  var obj6 = myObject.create([obj8]);
+
+
+
+  console.log("try obj0->obj0" + " should give error");
+  obj0.addPrototype(obj0);
+
+  console.log("try obj0->obj1"+ " should give error");
   obj0.addPrototype(obj1);
-  console.log(obj0);
-  console.log(obj1);
+
+  console.log("try obj1->obj3"+ " should give error");
   obj1.addPrototype(obj3);
-  console.log(obj1);
+
+  console.log("try obj2->obj4");
+  obj1.addPrototype(obj4);
+
+  console.log("try obj7->obj6"+ " should give error");
+  obj7.addPrototype(obj6);
+  console.log(obj7);
+
+
+
+  /*
+  * Test 1
+  */
+  // var obj0 = myObject.create(null);
+  // obj0.func = function(arg) { return "func0: " + arg; };
+  // var obj1 = myObject.create([obj0]);
+  // var obj2 = myObject.create([]);
+  // obj2.func = function(arg) { return "func2: " + arg; };
+  // var obj3 = myObject.create([obj1, obj2]);
+  // var result = obj3.call("func", ["hello"]) ;
+  // console.log("should print 'func0: hello' ->", result);
 
 
     /*
