@@ -1,7 +1,7 @@
 /*
-* mapo8904
-* jepl
-* erho
+* marcus pousette, mapo8904
+* jens plate, jepl4052
+* erik hörnström, erho7892
 */
 
 
@@ -87,13 +87,13 @@ try{
   console.log(obj1);
 
 
-/*
-* Test 2
-*/
-// obj0 = myObject.create(null);
-// obj0.func = function(arg) { return "func0: " + arg; };
-// result = obj0.call("func", ["hello"]);
-// console.log("should print 'func0: hello' ->", result);
+    /*
+    * Test 2
+    */
+    // obj0 = myObject.create(null);
+    // obj0.func = function(arg) { return "func0: " + arg; };
+    // result = obj0.call("func", ["hello"]);
+    // console.log("should print 'func0: hello' ->", result);
 
 /*
 * Test 3
@@ -107,5 +107,5 @@ try{
 // console.log("should print 'func0: hello' ->", result);
 
 } catch(err){
-  console.log(err);
+    console.log(err);
 }
