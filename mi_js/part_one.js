@@ -11,7 +11,7 @@ var myObject = {
     let obj = Object.create(this);
     if(prototypeList != null && !Array.isArray(prototypeList)){
       obj = null;
-      console.error("Bad params");
+      console.error("Prototype list must be empty, null or an array!");
     }
     if(prototypeList != null){
       //filter duplicate args and set obj prototypse
@@ -29,8 +29,8 @@ var myObject = {
     * a depth first seach for the function is used.
     * Example: obj.prototypeList[obj0, obj1, obj2]
     * If the obj0 (the first obj in the array) does not contain the function,
-    * a recursive call to obj0.prototypeList will be made instead of searching
-    * in obj1.
+    * a recursive call to obj0.prototypeList will be made first instead of searching
+    * in obj1 directly.
     */
     "depthSearch": function (funcName, parameters) {
   		if(this.hasOwnProperty(funcName)) {
@@ -59,9 +59,7 @@ var myObject = {
         }else{
           this.prototypeList = [obj];
         }
-        console.log("Added " + obj);
       }
-
     },
 
     "seachForSameObj":function(obj, originalObject){
@@ -70,13 +68,12 @@ var myObject = {
         found = true;
       }else{
         // There are more protoypes in the obj
-        for(let i=0; !found &&(obj.prototypeList)&&i < obj.prototypeList.length; i++){
+        for(let i=0; !found && (obj.prototypeList) && i < obj.prototypeList.length; i++){
           let proto = obj.prototypeList[i];
           found = proto.seachForSameObj(proto, originalObject);
         }
       }
-      console.log(found);
-      // no circular inheritance found, add the proto
+      // no circular inheritance found.
       return found;
     },
 
