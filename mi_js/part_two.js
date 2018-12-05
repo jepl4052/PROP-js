@@ -9,7 +9,7 @@ createClass = function(className, superClassList) {
         className : className,
         superClassList : superClassList,
 
-        call : function (funcName, parameters) {
+        call : function(funcName, parameters) {
 
             if (this.hasOwnProperty(funcName)) {
                 return this[funcName](parameters);
@@ -31,14 +31,14 @@ createClass = function(className, superClassList) {
             }
         },
 
-        new : function () {
+        new : function() {
             return {
                 class: this,
                 call: this.call
             };
         },
 
-        checkCircularInheritance : function (args) {
+        checkCircularInheritance : function(args) {
             let thisClass = args[0];
             let sClass = args[1];
             let circular = false;
@@ -70,14 +70,13 @@ createClass = function(className, superClassList) {
             return circular;
         },
 
-        addSuperClass : function (arg) {
+        addSuperClass : function(arg) {
 
             if (!this.checkCircularInheritance([this, arg])) {
-                if (this.superClassList !== undefined && this.superClassList !== null) {
-                    this.superClassList.push(arg)
-                 } else {
-                    this.superClassList = [arg];
+                if(this.superClassList === null || this.superClassList === undefined) {
+                    this.superClassList = [];
                 }
+                this.superClassList.push(arg);
             } else {
                 throw 'Error! Circular inheritance detected!';
             }
@@ -89,8 +88,10 @@ createClass = function(className, superClassList) {
  * Tests provided from assignment instructions
  */
 
+/*
+
 try {
-    /* Test 1 */
+    /* Test 1
     console.log("Test 1:");
 
     let class0 = createClass("Class0", null);
@@ -105,7 +106,7 @@ try {
     let result2 = obj3.call("func", ["func"]);
     console.log(result2);
 
-    /* Test 2 */
+    /* Test 2
     console.log("\nTest 2:");
 
     class0 = createClass("Class0", null);
@@ -117,7 +118,7 @@ try {
     result = obj3.call("func", ["hello"]);
     console.log(result);
 
-    /* Test 3 */
+    /* Test 3
     console.log("\nTest 3:");
 
     class0 = createClass("Class0", null);
@@ -126,7 +127,7 @@ try {
     result = obj0.call("func", ["hello"]);
     console.log(result);
 
-    /* Class inheritance problem testing */
+    /* Class inheritance problem testing
     console.log("\nCircular class inheritance test:");
 
     let firstClass = createClass("FirstClass", null);
@@ -136,3 +137,5 @@ try {
 } catch(err) {
     console.log(err);
 }
+
+*/
